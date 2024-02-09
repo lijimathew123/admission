@@ -1,0 +1,40 @@
+   
+  {% block content %}
+
+
+  {% if message %}
+     <p>{{ message }}</p>
+  {% else %}
+
+   <h2>{{ selected_course_type.name }}   {{ selected_course.name }}</h2>
+
+
+   
+
+
+
+   {% for college in colleges %}
+       <div>
+           <h3>{{ college.name }}</h3>
+           <p>Description: {{ college.description }}</p>
+           <p>Address: {{ college.address }}</p>
+           <p>Phone: {{ college.phone }}</p>
+           <p>Email: {{ college.email }}</p>
+          
+
+           {% if selected_course %}
+                <!-- If a course is selected, pass both college_id and course_id -->
+                <a href="{% url 'college_details' college.id selected_course.id %}">View More</a>
+            {% else %}
+                <!-- If no course is selected, pass only college_id -->
+                <a href="{% url 'college_detail' college.id %}">View More</a>
+            {% endif %}
+
+       </div>
+
+   {% endfor %}
+
+   {% endif %}
+
+
+   {% endblock %}

@@ -1,0 +1,177 @@
+{% block content %}
+<style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f2f2f2;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 30px;
+      color: #333;
+    }
+
+    h2 {
+      text-align: center;
+      color: #555;
+    }
+
+    form {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    select, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+
+    img {
+      vertical-align: middle;
+    }
+
+    option[selected] {
+      font-weight: bold;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    p {
+      text-align: center;
+      color: #555;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var streamDropdown = document.getElementById('stream');
+        var courseDropdown = document.getElementById('course');
+        var typeDropdown = document.getElementById('type');
+
+        // Initial options for course and type dropdowns
+        var initialCourseOptions = Array.from(document.getElementById('course').options);
+        var initialTypeOptions = Array.from(document.getElementById('type').options);
+
+        streamDropdown.addEventListener('change', function () {
+            var selectedStreamId = streamDropdown.value;
+            var selectedCourseTypeId = typeDropdown.value;
+
+            // Filter courses based on selected stream
+            var filteredCourses = initialCourseOptions.filter(function (option) {
+                return (
+                    (option.getAttribute('data-stream') === selectedStreamId || option.value === '') &&
+                    (option.getAttribute('data-type') === selectedCourseTypeId || option.value === '')
+                );
+            });
+
+            // Update options in course dropdown
+            updateDropdownOptions(courseDropdown, filteredCourses);
+        });
+
+        typeDropdown.addEventListener('change', function () {
+                var selectedStreamId = streamDropdown.value;
+                var selectedCourseTypeId = typeDropdown.value;
+
+                // Filter courses based on selected stream and course type
+                var filteredCourses = initialCourseOptions.filter(function (option) {
+                    return (
+                        (option.getAttribute('data-stream') === selectedStreamId || option.value === '') &&
+                        (option.getAttribute('data-type') === selectedCourseTypeId || option.value === '')
+                    );
+                });
+
+                // Update options in course dropdown
+                updateDropdownOptions(courseDropdown, filteredCourses);
+            });
+
+
+        function updateDropdownOptions(dropdown, options) {
+            // Clear existing options
+            dropdown.innerHTML = '';
+
+            // Add new options
+            options.forEach(function (option) {
+                dropdown.appendChild(option.cloneNode(true));
+            });
+        }
+    });
+</script>
+
+<h1>This is admission management system</h1>
+<h2>Course Search</h2>
+
+{% if message %}
+    <p>{{ message }}</p>
+{% else %}
+
+
+    <form method="GET" action="{% url 'college_list' %}">
+        <label for="stream">Stream:</label>
+        <select name="stream" id="stream">
+            <option value="" selected>Select Stream</option>
+            {% for stream in streams %}
+                <option value="{{ stream.id }}">
+                    {% if stream.icon %}
+                        <img src="{{ stream.icon.url }}" alt="{{ stream.name }} icon" height="20" width="20">
+                    {% endif %}
+                    {{ stream.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label for="type">Type:</label>
+            <select name="type" id="type">
+                <option value="" data-stream="" selected>Select Type</option>
+                {% for course_type in course_types %}
+                    <option value="{{ course_type.id }}" data-stream="{{ course_type.stream.id }}">
+                        {{ course_type.name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+        <label for="course">Course:</label>
+        <select name="course" id="course">
+            <option value="" data-stream="" data-type="" selected>Select Course</option>
+            {% for course in courses %}
+                <option value="{{ course.id }}" data-stream="{{ course.stream.id }}" data-type="{{ course.course_type.id }}">
+                    {{ course.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+       
+
+        <label for="location">Location:</label>
+        <select name="location" id="location">
+            <option value="" selected>Select Location</option>
+            {% for loc in locations %}
+                <option value="{{ loc.id }}">{{ loc.name }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Search</button>
+    </form>
+{% endif %}
+
+{% endblock %}

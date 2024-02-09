@@ -1,0 +1,199 @@
+
+{% block content %}
+<style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f2f2f2;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 30px;
+      color: #333;
+    }
+
+    h2 {
+      text-align: center;
+      color: #555;
+    }
+
+    form {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    select, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+
+    img {
+      vertical-align: middle;
+    }
+
+    option[selected] {
+      font-weight: bold;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    p {
+      text-align: center;
+      color: #555;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var streamDropdown = document.getElementById('stream');
+        var courseDropdown = document.getElementById('course');
+        var typeDropdown = document.getElementById('type');
+
+        // Initial options for course and type dropdowns
+        var initialCourseOptions = Array.from(document.getElementById('course').options);
+        var initialTypeOptions = Array.from(document.getElementById('type').options);
+
+        streamDropdown.addEventListener('change', function () {
+            var selectedStreamId = streamDropdown.value;
+
+            // Filter courses based on selected stream
+            var filteredCourses = initialCourseOptions.filter(function (option) {
+                return option.getAttribute('data-stream') === selectedStreamId || option.value === '';
+            });
+
+            // Filter types based on selected stream
+            var filteredTypes = initialTypeOptions.filter(function (option) {
+                return option.getAttribute('data-stream') === selectedStreamId || option.value === '';
+            });
+
+            // Update options in course and type dropdowns
+            updateDropdownOptions(courseDropdown, filteredCourses);
+            updateDropdownOptions(typeDropdown, filteredTypes);
+        });
+
+        function updateDropdownOptions(dropdown, options) {
+            // Clear existing options
+            dropdown.innerHTML = '';
+
+            // Add new options
+            options.forEach(function (option) {
+                dropdown.appendChild(option.cloneNode(true));
+            });
+        }
+    });
+</script>
+
+<h1>This is admission management system</h1>
+<h2>Course Search</h2>
+
+{% if message %}
+    <p>{{ message }}</p>
+{% else %}
+    <form method="GET" action="{% url 'college_list' %}">
+        <label for="stream">Stream:</label>
+        <select name="stream" id="stream">
+            <option value="" selected>Select Stream</option>
+            {% for stream in streams %}
+                <option value="{{ stream.id }}">
+                    {% if stream.icon %}
+                        <img src="{{ stream.icon.url }}" alt="{{ stream.name }} icon" height="20" width="20">
+                    {% endif %}
+                    {{ stream.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label for="course">Course:</label>
+        <select name="course" id="course">
+            <option value="" data-stream="" selected>Select Course</option>
+            {% for course in courses %}
+                <option value="{{ course.id }}" data-stream="{{ course.stream.id }}">
+                    {{ course.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label for="type">Type:</label>
+        <select name="type" id="type">
+            <option value="" data-stream="" selected>Select Type</option>
+            <option value="UG" data-stream="UG">Undergraduate</option>
+            <option value="PG" data-stream="PG">Postgraduate</option>
+        </select>
+
+        <label for="location">Location:</label>
+        <select name="location" id="location">
+            <option value="" selected>Select Location</option>
+            {% for loc in locations %}
+                <option value="{{ loc.id }}">{{ loc.name }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Search</button>
+    </form>
+{% endif %}
+
+{% endblock %}
+
+
+
+def college_list(request):
+#     if request.method == 'GET':
+#         try:
+#             stream_id = int(request.GET.get('stream', ''))
+#             course_id = int(request.GET.get('course', ''))
+#             course_type = request.GET.get('type', '')
+#             location_id = int(request.GET.get('location', ''))
+
+#             # Filter colleges based on selected options
+#             colleges = College.objects.all()
+
+#             if location_id:
+#                 colleges = colleges.filter(location__id=location_id)
+#             if course_id:
+#                 colleges = colleges.filter(collegecourse__course__id=course_id)
+#             if course_type:
+#                 colleges = colleges.filter(collegecourse__course__type=course_type)
+
+#             # Get the selected course with type
+#             selected_course = Course.objects.filter(id=course_id, type=course_type).first()
+
+#             context = {
+#                 'colleges': colleges,
+#                 'selected_course': selected_course,
+#             }
+
+#             if colleges.exists():
+#                 return render(request, 'college.html', context)
+#             else:
+#                 message = "No colleges match your criteria."
+#                 return render(request, 'index.html', {'message': message})
+
+#         except (ValueError, Course.DoesNotExist, Location.DoesNotExist) as e:
+#             # Handle invalid values or non-existent objects
+#             error_message = "Choose currect options"
+#             return render(request, 'index.html', {'message': error_message})
+
+#     return HttpResponse("Invalid request method")
+
+

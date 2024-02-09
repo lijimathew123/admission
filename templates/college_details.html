@@ -1,0 +1,172 @@
+{% block content %}
+
+
+<style>
+      body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f2f2f2;
+    }
+
+    div.container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    img.college-logo {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 10px;
+    }
+
+    div.college-details {
+        text-align: center;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+    }
+
+    h2 {
+        margin: 0;
+        font-size: 1.5em;
+    }
+
+    p {
+        margin: 5px 0;
+        font-size: 0.9em;
+    }
+
+    ul.tabs {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+    }
+
+    li {
+        padding: 10px;
+        background-color: #007BFF;
+        color: #fff;
+        text-align: center;
+        cursor: pointer;
+        font-size: 0.9em;
+        width: 120px; /* Set a fixed width for the buttons */
+    }
+
+    li + li {
+        margin-left: 10px;
+    }
+
+    .tab-content {
+        display: none;
+        padding-bottom: 40px;
+    }
+
+    .tab-content h3 {
+        color: #333;
+        font-size: 1.2em;
+    }
+
+    a.enquire-btn {
+        display: block;
+        padding: 10px;
+        background-color: #007BFF;
+        color: #fff;
+        text-decoration: none;
+        margin: 20px 100px;
+        cursor: pointer;
+        text-align: center;
+        font-size: 1em;
+    }
+
+    a.enquire-btn:hover {
+        background-color: #0056b3;
+    }
+    @media only screen and (max-width: 768px) {
+        div.container {
+            margin-bottom: 10px;
+        }
+
+        img.college-logo {
+            width: 60px;
+            height: 60px;
+        }
+
+        ul.tabs {
+            flex-direction: column;
+        }
+
+        li {
+            flex: none;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .tab-content {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="container">
+    <img src="{{ college.logo.url }}" alt="{{ college.name }} Logo" class="college-logo">
+    <div class="college-details">
+        <h2>{{ college.name }}</h2>
+        <p>{{ college.address }} | {{ college.phone }} | {{ college.email }} | {{ college.location.name }}</p>
+        <p>{{ college.description }}</p>
+    </div>
+</div>
+
+<ul class="tabs">
+    <li onclick="showTab('course')">Course</li>
+    <li onclick="showTab('eligibility')">Eligibility</li>
+</ul>
+
+<div id="courseTab" class="tab-content">
+    {% if selected_course %}
+        <h3>Course Details</h3>
+        <p>Course Name: {{ selected_course.name }}</p>
+        <p>Stream: {{ selected_course.stream.name }}</p>
+        <p>Course Type: {{ course_type }}</p>
+        {% if college_course_details %}
+            <p>Syllabus: {{ college_course_details.syllabus }}</p>
+            <p>Price: {{ college_course_details.price }}</p>
+        {% else %}
+            <p>No College Course Details available for the selected course.</p>
+        {% endif %}
+    {% else %}
+        <p>No Course selected.</p>
+    {% endif %}
+</div>
+
+<div id="eligibilityTab" class="tab-content">
+    {% if college_course_details %}
+        <h3>Eligibility Details</h3>
+        <p>{{ college_course_details.eligibility }}</p>
+    {% else %}
+        <p>No College Course Details available for the selected course.</p>
+    {% endif %}
+</div>
+
+<a class="enquire-btn" href="{% url 'contact' college.id college_course_details.id %}">Enquire now</a>
+
+<script>
+    function showTab(tabName) {
+        var tabs = document.querySelectorAll('.tab-content');
+        tabs.forEach(function(tab) {
+            tab.style.display = 'none';
+        });
+
+        document.getElementById(tabName + 'Tab').style.display = 'block';
+    }
+
+    // Show the 'course' tab by default
+    showTab('course');
+</script>
+
+{% endblock %}

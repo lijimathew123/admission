@@ -1,0 +1,18 @@
+
+
+{% block content %}
+    <h2>{{ college.name }} Details</h2>
+
+    <!-- Display college details -->
+
+    <!-- Display college courses details -->
+    {% for course in college_courses %}
+        <div>
+            <h3>{{ course.course.name }}</h3>
+            <p>Stream: {{ course.course.stream.name }}</p>
+            <p>Course Type: {{ course.course.course_type.name }}</p>
+            <p>Price: {{ course.price }}</p>
+            <!-- Add other course details as needed -->
+        </div>
+    {% endfor %}
+{% endblock %}
