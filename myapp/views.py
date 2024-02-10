@@ -9,7 +9,16 @@ from django.contrib.staticfiles import finders
 import json
 from django.db.models import Min, Max
 
+def get_course_prices(request):
+    if request.method == 'GET':
+        course_id = request.GET.get('course_id')
 
+        if course_id:
+            # Fetch minimum and maximum prices for the selected course from colleges
+            prices = CollegeCourse.objects.filter(course_id=course_id).aggregate(min_price=Min('price'), max_price=Max('price'))
+            return JsonResponse({'min_price': prices['min_price'], 'max_price': prices['max_price']})
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
 

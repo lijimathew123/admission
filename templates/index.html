@@ -61,6 +61,23 @@
       text-align: center;
       color: #555;
     }
+
+    #price-display {
+    color: black;
+    }
+
+
+    #price-slider {
+        width: 80%;
+        margin: 20px auto;
+    }
+
+    #min-price, #max-price {
+        display: inline-block;
+        width: 50px;
+        text-align: center;
+        font-size: 14px;
+    }
 </style>
 
 <script>
@@ -68,6 +85,11 @@
         var streamDropdown = document.getElementById('stream');
         var courseDropdown = document.getElementById('course');
         var typeDropdown = document.getElementById('type');
+        var priceDisplay = document.getElementById('price-display');
+        var priceSlider = document.getElementById('price-slider');
+        var minPriceElement = document.getElementById('min-price');
+        var maxPriceElement = document.getElementById('max-price');
+
 
         // Initial options for course and type dropdowns
         var initialCourseOptions = Array.from(document.getElementById('course').options);
@@ -104,6 +126,55 @@
                 // Update options in course dropdown
                 updateDropdownOptions(courseDropdown, filteredCourses);
             });
+        
+
+
+           courseDropdown.addEventListener('change', function () {
+            var selectedCourseId = courseDropdown.value;
+
+            fetch(`/get_course_prices/?course_id=${selectedCourseId}`)
+                .then(response => response.json())
+                .then(data => {
+                    updatePriceSlider(data.min_price, data.max_price);
+                    updateDisplayedValues(); // Update displayed values on course change
+                })
+                .catch(error => console.error('Error fetching course prices:', error));
+        });
+
+        priceSlider.addEventListener('input', function () {
+            updateDisplayedValues(); // Update displayed values as the slider moves
+        });
+
+        priceSlider.addEventListener('mousemove', function (event) {
+            // Display changing slider value while cursor is over the slider
+            updateDisplayedValuesOnHover(event);
+        });
+
+
+          
+        function updatePriceSlider(minPrice, maxPrice) {
+            // Update slider values
+            priceSlider.setAttribute('min', minPrice);
+            priceSlider.setAttribute('max', maxPrice);
+            priceSlider.value = minPrice;
+
+            // Display minimum and maximum values
+            minPriceElement.textContent = minPrice;
+            maxPriceElement.textContent = maxPrice;
+        }
+
+        function updateDisplayedValues() {
+            // Update displayed values based on the slider position
+            priceDisplay.innerHTML = `Selected Price: ${priceSlider.value}`;
+        }
+
+        function updateDisplayedValuesOnHover(event) {
+            // Update displayed values while cursor is over the slider
+            var hoveredValue = event.target.value;
+            priceDisplay.innerHTML = `Selected Price: ${hoveredValue}`;
+        }
+
+
 
 
         function updateDropdownOptions(dropdown, options) {
@@ -170,8 +241,26 @@
             {% endfor %}
         </select>
 
+        <div id="price-slider-container">
+            <span id="min-price"></span>
+            <input type="range" id="price-slider" name="price" value="0">
+            <span id="max-price"></span>
+        </div>
+
+        <p id="price-display"></p>
+
+
+
+
+
         <button type="submit">Search</button>
     </form>
+
+
+
+    
+
+
 {% endif %}
 
 {% endblock %}
